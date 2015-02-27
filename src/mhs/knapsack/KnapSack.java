@@ -1,15 +1,17 @@
-/* ***************************************************************************************
-
-   Mark Sattolo (epistemik@gmail.com)
-  -----------------------------------------------
-     $File: //depot/Eclipse/Java/workspace/KnapsackNew/src/mhs/knapsack/KnapSack.java $
-     $Revision: #6 $
-     $Change: 58 $
-     $DateTime: 2011/02/02 11:56:15 $
+/*
+ * $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  
+  Mark Sattolo (epistemik@gmail.com)
+ -----------------------------------------------
+   $File: //depot/Eclipse/Java/workspace/KnapsackNew/src/mhs/knapsack/KnapSack.java $
+   $Revision: #6 $
+   $Change: 58 $
+   $DateTime: 2011/02/02 11:56:15 $
    
-   git version created Mar 22, 2014.
-   repo is mhs-git
-  -----------------------------------------------
+  git version created Mar 22, 2014
+  DrJava version created Feb 13, 2015
+  
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   
   Best-First Search with Branch-and-Bound Pruning Algorithm for the 0-1 Knapsack Problem
   
@@ -17,23 +19,23 @@
         by Richard Neapolitan & Kumarss Naimipour, Jones & Bartlett, ISBN 0-7637-0620-5
   
   Problem: Let n items be given, where each item has a weight and a profit,
-    			 and these weights and profits are positive integers.
-    			 Furthermore, let a positive integer W (maximum weight) be given.
-    			 Determine an optimal set of items, i.e. the group of items with maximum total profit,
-    			 under the constraint that the sum of their weights cannot exceed W.
+        and these weights and profits are positive integers.
+        Furthermore, let a positive integer W (maximum weight) be given.
+        Determine an optimal set of items, i.e. the group of items with maximum total profit,
+        under the constraint that the sum of their weights cannot exceed W.
   
   Inputs: 1) A positive integer giving the maximum value permitted for the sum
              of the weights of all selected items.
           2) Name of a file which contains a list of items which can be chosen.
              The file contains one item per line arranged as follows: 
              
-	        <string (item name)>'whitespace'<integer (profit)>'whitespace'<integer (weight)>
+         <string (item name)>'whitespace'<integer (profit)>'whitespace'<integer (weight)>
   
   Outputs: 1) An integer that is the sum of the profits of the optimal set.
            2) An integer that is the sum of the weights of the optimal set.
            3) A list of the names of all the items comprising the optimal set.
 
-**************************************************************************************** */
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
 
 package mhs.knapsack;
 
@@ -56,11 +58,11 @@ public class KnapSack
   
   static final int MAXINPUT = 1024 ;
   
-  static final String STR_DEFAULT_LEVEL = "CONFIG" ;
+  static final String STR_DEFAULT_LOG_LEVEL = "CONFIG" ;
   
-  static final Level DEFAULT_LEVEL = Level.parse( STR_DEFAULT_LEVEL );
+  static final Level DEFAULT_LOG_LEVEL = Level.parse( STR_DEFAULT_LOG_LEVEL );
   
-  static Level currentLevel = DEFAULT_LEVEL ;
+  static Level currentLevel = DEFAULT_LOG_LEVEL ;
   
   /** 
    * Logging management
@@ -94,7 +96,7 @@ public class KnapSack
   };
   
   /** project name  */
-  public static final String PROJECT_NAME = "New Knapsack" ;
+  public static final String PROJECT_NAME = "Knapsack" ;
   
   private int numItems = 0 ,
               maxWeight    ; // maximum allowed weight of items (user-supplied)
@@ -110,13 +112,12 @@ public class KnapSack
   
   /**
    * Default Constructor
-   * 
    * @param args - from command line
    */
   public KnapSack( String args[] )
   {
     // INIT LOGGING
-    logManager = new KnapLogManager( args.length >= 2 ? args[1] : STR_DEFAULT_LEVEL );
+    logManager = new KnapLogManager( args.length >= 2 ? args[1] : STR_DEFAULT_LOG_LEVEL );
     if( logManager == null )
     {
       System.err.print( "\t>> KnapSack CONSTRUCTOR: COULD NOT create a KnapLogManager!" );
@@ -125,7 +126,7 @@ public class KnapSack
     
     currentLevel = logManager.getLevel();
     
-    logger = logManager.getLogger();
+    logger = logManager.getKnapLogger();
     if( logger == null )
     {
       System.err.print( "\t>> KnapSack CONSTRUCTOR: COULD NOT create a KnapLogger!" );
@@ -136,7 +137,7 @@ public class KnapSack
     // TODO handle logging setup as well
     setup( args );
     
-    logManager.listLoggers();
+    logManager.listActiveLoggers();
     logManager.reportLevel();
     
     logger.log( " File name is '" + fileName + "'\n Max Weight = " + maxWeight );
@@ -148,11 +149,10 @@ public class KnapSack
   /*    METHODS
   ==================================================================================================== */
   
-	/**
-	 * MAIN
-	 * 
-	 * @param args - from user
-	 */
+ /**
+  * MAIN
+  * @param args - from user
+  */
   public static void main( final String args[] )
   {
     new KnapSack( args ).go();
@@ -161,7 +161,6 @@ public class KnapSack
   
   /**
    * Check the command line parameters
-   * 
    * @param params - from main() via the Constructor
    */
   private void setup( String params[] ) 
@@ -169,8 +168,9 @@ public class KnapSack
     // need the name of the file containing the items
     if( params.length < 1 )
     {
-      System.err.println( "\n Usage: java " + this.getClass().getSimpleName() + " <items file> [log_level] [max weight]\n"
-                          + "        (log_level = INFO, CONFIG or FINE\n)" );
+      System.err.println( "\n Usage: java " + this.getClass().getSimpleName() 
+                           + " <items file> [log_level] [max weight]\n"
+                           + "        (log_level = e.g. INFO, CONFIG, FINE)" );
       
       System.exit( this.hashCode() );
     }
@@ -189,7 +189,7 @@ public class KnapSack
       maxWeight = getInputInteger();
     }  
     else
-	      maxWeight = Integer.parseInt( params[2] );
+        maxWeight = Integer.parseInt( params[2] );
     
     // maxWeight must be positive
     if( maxWeight < 1 )
@@ -227,7 +227,8 @@ public class KnapSack
     
     // display the results
     logger.severe( " For Weight limit " + maxWeight + ": Max Profit = " + bestItems.getProfit() 
-                   + " (weight of items = " + bestItems.getWeight() + ")" 
+                   + " (weight of items = " + bestItems.getWeight()
+                   + " ; p/w ratio = " + bestItems.calcPwr().strPwr() + ")" 
                    + "\n Best items are: " + bestItems.getName() );
     
     logger.severe( "*** PROGRAM ENDED ***" );
@@ -236,7 +237,6 @@ public class KnapSack
   
   /**
    * Open the user-specified file and parse the data
-   * 
    * @return boolean indicating if data was retrieved without problem
    */
   private boolean getFileData()
@@ -273,7 +273,8 @@ public class KnapSack
         // create a new KnapNode and load it into the KnapItemList
         itemList.add( new KnapNode(item, p, w) );
         
-        itemList.get( numItems ).log( logger, Level.FINE, "\nNode #" + (numItems+1) + "\n---------------------------------\n" );
+        itemList.get( numItems ).log( logger, Level.FINE, "\nNode #" + (numItems+1) 
+                                      + "\n---------------------------------\n" );
         logger.finer( "Name is " + item + " ; Profit is " + p + " ; Weight is " + w );
         
         numItems++ ; // total number of items in the file
@@ -308,7 +309,6 @@ public class KnapSack
   
   /**
    * get a String from user
-   * 
    * @return input String
    */
   static String getInputString()
@@ -330,7 +330,6 @@ public class KnapSack
   
   /**
    * get an int from user
-   * 
    * @return input int
    */
   static int getInputInteger()
@@ -351,12 +350,11 @@ public class KnapSack
   
 }/* class KnapSack */
 
-/* *************************************************************************************************************** */
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
 
 /**
  * A collection of {@link KnapNode}s, ordered by highest profit-to-weight ratio,
  * used to store the initial list of items received by {@link KnapSack}.
- * 
  * @author MARK SATTOLO
  * @version $Revision: #6 $
  */
@@ -374,11 +372,11 @@ class KnapItemList extends Vector<KnapNode>
   }
   
   /*    METHODS
-  ==================================================================================================== */
+  *****************************************************************************************************/
   
   /**
-   * Verify the requested index and if good then return the item at that position, otherwise {@link System#exit(int)}
-   * 
+   * Verify the requested index and if good then return the item at that position,
+   * otherwise {@link System#exit(int)}
    * @param index - place in the list of the KnapNode to return
    * @return {@link KnapNode}
    */
@@ -396,7 +394,6 @@ class KnapItemList extends Vector<KnapNode>
   
   /**
    * Find the optimal set of items for the given maximum weight
-   * 
    * @param bestItems - store the optimal set
    * @param maxWeight - weight restriction
    */
@@ -501,7 +498,6 @@ class KnapItemList extends Vector<KnapNode>
   
   /**
    * Log each {@link KnapNode} in the list
-   * 
    * @param lev - level to print at
    * @param s - extra info to print
    */
@@ -525,7 +521,6 @@ class KnapItemList extends Vector<KnapNode>
   
   /**
    * Log each {@link KnapNode} in the list
-   * 
    * @param s - extra info to print
    */
   public void log( String s )
@@ -534,7 +529,7 @@ class KnapItemList extends Vector<KnapNode>
   }
   
   /*    FIELDS
-  ==================================================================================================== */
+  *****************************************************************************************************/
   
   static final int INIT = -1 , // after increment, the initial index into the item list will be 0
                     TOP =  0 ; // get the top (highest priority) item from the state space tree

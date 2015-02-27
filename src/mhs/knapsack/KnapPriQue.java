@@ -1,15 +1,17 @@
-/* *****************************************************************************
-
-    Mark Sattolo (epistemik@gmail.com)
-   -----------------------------------------------
-     $File: //depot/Eclipse/Java/workspace/KnapsackNew/src/mhs/knapsack/KnapPriQue.java $
-     $Revision: #6 $
-     $Change: 58 $
-     $DateTime: 2011/02/02 11:56:15 $
-
-   git version created Mar 22, 2014.
+/* 
+ * $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  
+  Mark Sattolo (epistemik@gmail.com)
+ -----------------------------------------------
+   $File: //depot/Eclipse/Java/workspace/KnapsackNew/src/mhs/knapsack/KnapPriQue.java $
+   $Revision: #6 $
+   $Change: 58 $
+   $DateTime: 2011/02/02 11:56:15 $
    
-****************************************************************************** */
+  git version created Mar 22, 2014
+  DrJava version created Feb 13, 2015
+   
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
 
 package mhs.knapsack;
 
@@ -25,10 +27,9 @@ import java.util.logging.Level;
  */
 @SuppressWarnings("serial")
 public class KnapPriQue extends Vector<KnapNode>
-{	
+{ 
   /**
    * add the given node at the proper priority position
-   * 
    * @see java.util.Vector#add(java.lang.Object)
    */
   @Override
@@ -57,7 +58,6 @@ public class KnapPriQue extends Vector<KnapNode>
   
   /**
    * Log each {@link KnapNode} in the list
-   * 
    * @param k - logger to print to
    * @param lev - level to print at
    * @param s - extra info to print
@@ -82,7 +82,6 @@ public class KnapPriQue extends Vector<KnapNode>
   
   /**
    * Log the head {@link KnapNode} in the list
-   * 
    * @param k - logger to print to
    * @param lev - level to print at
    */

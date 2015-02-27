@@ -1,5 +1,6 @@
-/* ***************************************************************************************
- 
+/*
+ * $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  
   Mark Sattolo (epistemik@gmail.com)
  -----------------------------------------------
    $File: //depot/Eclipse/Java/workspace/KnapsackNew/src/mhs/knapsack/KnapLog.java $
@@ -7,16 +8,18 @@
    $Change: 58 $
    $DateTime: 2011/02/02 11:56:15 $
    
- git version created Mar 22, 2014.
- 
-*************************************************************************************** */
+  git version created Mar 22, 2014
+  DrJava version created Feb 13, 2015
+  
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
 
 package mhs.knapsack;
 
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.logging.*;
+import java.util.logging.* ;
+import java.io.IOException ;
 
 /**
  * Manage logging for the package
@@ -28,76 +31,129 @@ class KnapLogManager
   /**
    * USUAL Constructor <br>
    * Set up my Logger and Handler(s) and initiate logging at the startup Level
-   * @param level - initial log {@link Level} received from {@link KnapSack#KnapSack(String[])}
+   * @param strLevel Starting Level
    * @see KnapLogger#getNewLogger
    * @see FileHandler
    * @see Handler#setFormatter
    */
-  KnapLogManager( String level )
+  KnapLogManager( String strLevel )
   {
-    try
+    // create a Knapsack Logger to log to a file
+    myLogger = KnapLogger.getNewLogger( "Knapsack Logger" );
+    if( myLogger == null )
     {
-      setLevel( Level.parse(level) );
-    }
-    catch( Exception e )
-    {
-      System.err.println( "Problem with parameter for initial Log Level: " + e.toString() );
-      setLevel( DEFAULT_LEVEL );
+      System.err.println( "KnapLogManager CONSTRUCTOR: Could NOT get a Knapsack Logger??!!" );
+      System.exit( this.hashCode() );
     }
     
-    // get Logger
-    myLogger = KnapLogger.getNewLogger( getClass().getName() );
-    
+    // get a Handler, set its formatter and add it to the Knapsack logger
     try
     {
-      /*
-      xmlHandler = new FileHandler( LOG_SUBFOLDER + Launcher.PROJECT_NAME + LOG_ROLLOVER_SPEC + XML_LOGFILE_TYPE ,
-                                    LOGFILE_MAX_BYTES, MAX_NUM_LOG_FILES );
-      xmlHandler.setFormatter( new XMLFormatter() );
-      //*/
       textHandler = new FileHandler( LOG_SUBFOLDER + KnapSack.PROJECT_NAME + LOG_ROLLOVER_SPEC + TEXT_LOGFILE_TYPE ,
                                      LOGFILE_MAX_BYTES, MAX_NUM_LOG_FILES );
-    }
-    catch( Exception e )
-    {
-      System.err.println( "FileHandler exception: " + e );
-    }
-    
-    if( textHandler != null )
-    {
-      try
+      // set the Handler to use the Knapsack Formatter
+      if( textHandler != null )
       {
         textHandler.setFormatter( new KnapFormatter() );
         
-        // Send logger output to our FileHandler.
+        // send logger output to our Handler
         myLogger.addHandler( textHandler );
+      }
+      else
+          System.err.println( "KnapLogManager CONSTRUCTOR: textHandler is NULL!" );
+    }
+    catch( IOException ioe )
+    {
+      System.err.println( "KnapLogManager CONSTRUCTOR: Could NOT create a FileHandler: " + ioe );
+    }
+    catch( SecurityException se )
+    {
+      System.err.println( "KnapLogManager CONSTRUCTOR: Security Exception: " + se );
+    }
+    
+    // get the anonymous logger -- it prints to console
+    anonLogger = LogManager.getLogManager().getLogger("");
+    if( anonLogger != null )
+    {
+      try
+      {
+        for( Handler h : anonLogger.getHandlers() )
+          h.setFormatter( new KnapFormatter() );
       }
       catch( Exception e )
       {
-        System.err.println( "textHandler exception: " + e );
+        System.err.println( "KnapLogManager CONSTRUCTOR: anonLogger setFormatter() Exception: " + e );
       }
     }
     else
-        System.err.println( "\t>> PROBLEM: textHandler is NULL!" );
+        System.err.println( "KnapLogManager CONSTRUCTOR: anonLogger is NULL!" );
     
-    // Set the level of detail that gets logged.
-    myLogger.setLevel( currentLevel );
+    // Limit log messages to <strLevel> and above
+    setLevel( strLevel );
     
   }// CONSTRUCTOR
   
   /** @return  private static {@link KnapLogger} <var>myLogger</var>  */
-  protected KnapLogger getLogger()
+  protected KnapLogger getKnapLogger()
   { return myLogger ; }
+  
+  /** @return  private static {@link KnapLogger} <var>myLogger</var>  */
+  protected Logger getAnonLogger()
+  { return anonLogger ; }
   
   /** @return  private static {@link Level} <var>currentLevel</var>  */
   protected Level getLevel()
   { return currentLevel ;}
   
-  /** @param level - {@link java.util.logging.Level}  */
+  /**
+   * Set the level of detail that gets logged
+   * @param lev - {@link java.lang.String}
+   */
+  void setLevel( String lev )
+  {
+    Level validLevel = DEFAULT_LEVEL ;
+    if( lev != null && !lev.isEmpty() )
+    {
+      String s = lev.toUpperCase();
+      try
+      {
+        validLevel = Level.parse( s );
+      }
+      catch( IllegalArgumentException iae )
+      {
+        System.err.println( "KnapLogManager.setLevel(String): " + iae.toString()
+                            + " -- using DEFAULT Level: " + DEFAULT_LEVEL.getName() );
+      }
+    }
+    else
+        System.err.println( "KnapLogManager.setLevel(String): INVALID parameter -- using DEFAULT Level: "
+                            + DEFAULT_LEVEL.getName() );
+    
+    setLevel( validLevel );
+  }
+  
+  /**
+   * Set the level of detail that gets logged
+   * @param level - {@link java.util.logging.Level}
+   */
   protected void setLevel( Level level )
   {
     currentLevel = level ;
     intLevel = currentLevel.intValue();
+    
+    if( myLogger != null )
+    {
+      myLogger.setLevel( currentLevel );
+      for( Handler h: myLogger.getHandlers() )
+        h.setLevel( level );
+    }
+    
+    if( myLogger != null )
+    {
+      anonLogger.setLevel( currentLevel );
+      for( Handler h: anonLogger.getHandlers() )
+        h.setLevel( level );
+    }
   }
   
   /**
@@ -141,7 +197,7 @@ class KnapLogManager
           intLevel -= 100 ; // go down to a finer (more logging) setting
     
     currentLevel = Level.parse( Integer.toString(intLevel) );
-    myLogger.setLevel( currentLevel );
+    setLevel( currentLevel );
     
     myLogger.severe( "Log level is NOW at " + currentLevel );
     
@@ -151,17 +207,50 @@ class KnapLogManager
   
   String myname() { return getClass().getSimpleName(); }
   
-  void listLoggers()
-  {
-    Enumeration<String> e = LogManager.getLogManager().getLoggerNames();
-    while( e.hasMoreElements() )
-      myLogger.appendln( e.nextElement() );
-    myLogger.send( currentLevel );
-  }
-  
   void reportLevel()
   {
     myLogger.severe( "Current log level is " + currentLevel );
+  }
+  
+  void listLoggers()
+  {
+    LogManager lm = LogManager.getLogManager();
+    myLogger.appendln( "Current Loggers:" );
+    
+    Enumeration<String> e = lm.getLoggerNames();
+    while( e.hasMoreElements() )
+    {
+      String name = e.nextElement();
+      myLogger.appendln( name );
+      for( Handler h : lm.getLogger(name).getHandlers() )
+        myLogger.append( "\t> " + h.getLevel() );
+      myLogger.appendln( " |" );
+    }
+    
+    myLogger.append( "=====================================" );
+    myLogger.send( currentLevel );
+  }
+  
+  void listActiveLoggers()
+  {
+    LogManager lm = LogManager.getLogManager();
+    myLogger.appendln( "Active Loggers:" );
+    
+    Enumeration<String> e = lm.getLoggerNames();
+    while( e.hasMoreElements() )
+    {
+      String name = e.nextElement();
+      if( lm.getLogger(name).getHandlers().length > 0 )
+      {
+        myLogger.appendln( " * " + (name.equals("") ? "'anonymous logger'" : name) );
+        for( Handler h : lm.getLogger(name).getHandlers() )
+          myLogger.append( "     > " + h.getLevel() );
+        myLogger.appendln( " |" );
+      }
+    }
+    
+    myLogger.append( "=====================================" );
+    myLogger.send( currentLevel );
   }
   
   /** default value */
@@ -187,15 +276,18 @@ class KnapLogManager
   /** @see FileHandler */
   private static FileHandler textHandler ;//, xmlHandler ;
   
+  /** @see Logger */
+  private static Logger anonLogger ;
+  
   /** current {@link Level} */
   private static Level currentLevel ;
   
   /** integer value of {@link #currentLevel} */
   private static int intLevel ;
 
-}// class KnapLogManager
+}/* class KnapLogManager */
 
-/* ========================================================================================================================== */
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
 
 /**
  *  Perform all the actual logging operations
@@ -204,9 +296,8 @@ class KnapLogManager
  */
 class KnapLogger extends Logger
 {
- /*
-  *             C O N S T R U C T O R S
-  *****************************************************************************************************************/
+ /*            C O N S T R U C T O R S
+  *****************************************************************************************************/
    
   /**
    * USUAL constructor - just calls the super equivalent
@@ -219,18 +310,16 @@ class KnapLogger extends Logger
     super( name, resourceBundleName );
   }
   
- /*
-  *              M E T H O D S
-  *****************************************************************************************************************/
+ /*              M E T H O D S
+  ***************************************************************************************************/
   
- // =============================================================================================================
+ // =============================================================================
  //                          I N T E R F A C E
- // =============================================================================================================
+ // =============================================================================
    
   /**
    * Allow other package classes to create a {@link Logger} <br>
    * - adds this new {@link Logger} to the {@link LogManager} namespace
-   * 
    * @param name - identify the {@link Logger}
    * @return the <b>new</b> {@link Logger}
    * @see LogManager#addLogger(Logger)
@@ -245,7 +334,6 @@ class KnapLogger extends Logger
   
   /**
    * Prepare and send a {@link LogRecord} with data from the log buffer
-   * 
    * @param level - {@link Level} to log at
    */
   protected void send( Level level )
@@ -263,7 +351,6 @@ class KnapLogger extends Logger
   
   /**
    * Add data to the log buffer
-   * 
    * @param msg - data String 
    */
   protected synchronized void append( String msg )
@@ -271,7 +358,6 @@ class KnapLogger extends Logger
   
   /** 
    * Add data to the log buffer with a terminating newline
-   * 
    * @param msg - data String 
    */
   protected void appendln( String msg )
@@ -287,7 +373,6 @@ class KnapLogger extends Logger
   
   /**
    * Log the submitted info at the current level
-   * 
    * @param s - info to print
    */
   public void log( String s )
@@ -307,13 +392,12 @@ class KnapLogger extends Logger
   }
   //*/  
   
- // =============================================================================================================
+ // =============================================================================
  //                            P R I V A T E
- // =============================================================================================================
+ // =============================================================================
   
   /**
    * Provide a <b>new</b> {@link LogRecord} with Caller class and method name info
-   * 
    * @param level - {@link Level} to log at
    * @param msg - info to insert in the {@link LogRecord}
    * @return the produced {@link LogRecord}
@@ -329,7 +413,6 @@ class KnapLogger extends Logger
   
   /**
    *  Actually send the {@link LogRecord} to the logging handler
-   *  
    *  @param lr - {@link LogRecord} to send
    *  @see Logger#log(LogRecord)
    */
@@ -344,7 +427,6 @@ class KnapLogger extends Logger
   
   /**
    *  Get the name of the {@link Class} and <em>Method</em> that called {@link KnapLogger}
-   *  
    *  @see Throwable#getStackTrace
    *  @see StackTraceElement#getClassName
    *  @see StackTraceElement#getMethodName
@@ -364,9 +446,8 @@ class KnapLogger extends Logger
   
   }// KnapLogger.getCallerClassAndMethodName()
   
- /*
-  *            F I E L D S
-  *****************************************************************************************************************/
+ /*            F I E L D S
+  ***************************************************************************************************/
   
   /** Class calling the Logger */
   private String callclass = null ;
@@ -383,13 +464,12 @@ class KnapLogger extends Logger
   /** default if cannot get method or class name  */
   static final String strUNKNOWN = "unknown" ;
   
-}// class KnapLogger
+}/* class KnapLogger */
 
-/* ========================================================================================================================== */
+/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
 
 /**
  *  Do all the actual formatting of {@link LogRecord}s for {@link KnapLogger}
- *  
  *  @author Mark Sattolo
  *  @see java.util.logging.Formatter
  */
@@ -397,7 +477,6 @@ class KnapFormatter extends Formatter
 {
   /**
    *  Instructions on how to format a {@link LogRecord}
-   *  
    *  @see Formatter#format
    */
   @Override
@@ -409,7 +488,6 @@ class KnapFormatter extends Formatter
   
   /**
    *  Printed at the beginning of a Log file
-   *  
    *  @see Formatter#getHead
    */
   @Override
@@ -420,7 +498,6 @@ class KnapFormatter extends Formatter
   
   /**
    *  Printed at the end of a Log file
-   *  
    *  @see Formatter#getTail
    */
   @Override
@@ -437,8 +514,8 @@ class KnapFormatter extends Formatter
                 nl   = "\n" ,
                 mi   = "()" , // method indicator
                 div  = "=================================================================" ,
-                head = "KnapsackNew START" + nl ,
-                rec  = ": KnapsackNew record #" ,
-                tail = "KnapsackNew END" + nl   ;
+                head = "Knapsack START" + nl ,
+                rec  = ": Knapsack Record #" ,
+                tail = "Knapsack END" + nl   ;
 
-}// Class KnapFormatter
+}/* class KnapFormatter */

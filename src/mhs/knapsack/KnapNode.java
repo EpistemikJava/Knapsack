@@ -1,15 +1,17 @@
-/* *****************************************************************************
+/*
+ * $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  
+  Mark Sattolo (epistemik@gmail.com)
+ -----------------------------------------------
+   $File: //depot/Eclipse/Java/workspace/KnapsackNew/src/mhs/knapsack/KnapNode.java $
+   $Revision: #7 $
+   $Change: 58 $
+   $DateTime: 2011/02/02 11:56:15 $
 
-    Mark Sattolo (epistemik@gmail.com)
-   -----------------------------------------------
-     $File: //depot/Eclipse/Java/workspace/KnapsackNew/src/mhs/knapsack/KnapNode.java $
-     $Revision: #7 $
-     $Change: 58 $
-     $DateTime: 2011/02/02 11:56:15 $
-
-   git version created Mar 22, 2014.
+  git version created Mar 22, 2014
+  DrJava version created Feb 13, 2015
    
-****************************************************************************** */
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
 
 package mhs.knapsack;
 
@@ -23,9 +25,9 @@ import java.util.logging.Level;
  * @version $Revision: #7 $
  */
 public class KnapNode // implements Comparable
-{	
+{ 
   /*    Fields
-  ==================================================================================================== */
+  *****************************************************************************************************/
   
   private  String  $items  ;
   private  int     $profit ;
@@ -35,38 +37,30 @@ public class KnapNode // implements Comparable
   private  double  $bound  ; // potential maximum profit of each node
   
   /*    Constructors
-  ==================================================================================================== */
+  *****************************************************************************************************/
   
   /**
    * Constructor with name of item(s)
-   * 
    * @param s - item name(s)
    */
   public KnapNode( String s )
   {
-    $items  = s ;
-    $index  = 0 ;
-    $profit = $weight = 0 ;
-    $pwr    = $bound  = 0.0 ;
+    this( s, 0, 0 );
   }
-	
+ 
   /**
    * Constructor with name of item(s) and index
-   * 
    * @param s - item name(s)
    * @param i - index
    */
   public KnapNode( String s, int i )
   {
-    $items  = s ;
-    $index  = i ;
-    $profit = $weight = 0 ;
-    $pwr    = $bound  = 0.0 ;
+    this( s, 0, 0 );
+    $index = i ;
   }
-	
+  
   /**
    * Constructor with name of item(s), profit & weight
-   * 
    * @param s - item name(s)
    * @param p - profit
    * @param w - weight
@@ -83,7 +77,6 @@ public class KnapNode // implements Comparable
   
   /**
    * Copy Constructor
-   * 
    * @param k - KnapNode to copy
    */
   public KnapNode( KnapNode k )
@@ -97,24 +90,30 @@ public class KnapNode // implements Comparable
   }
   
   /*    METHODS
-  ==================================================================================================== */
+  *****************************************************************************************************/
   
   String  getName() { return $items ; }
   void    setName( String s ) { $items = s ; }
   void    addName( String s ) { $items = $items.concat(s); }
   
-  int	    getIndex() { return $index ; }
+  int     getIndex() { return $index ; }
   void    setIndex( int i ) { $index = i ; }
   void    incIndex( int ii ) { $index += ii ; }
   
-  int	    getProfit() { return $profit ; }
+  int     getProfit() { return $profit ; }
   void    setProfit( int p ) { $profit = p ; }
   
-  int	    getWeight() { return $weight ; }
+  int     getWeight() { return $weight ; }
   void    setWeight( int w ) { $weight = w ; }
   
-  double  getPwr() { return $pwr ; }
-  void    setPwr( double r ) { $pwr = r ; }
+  double   getPwr() { return $pwr ; }
+  void     setPwr( double r ) { $pwr = r ; }
+  KnapNode calcPwr()
+  {
+    $pwr = ($weight > 0) ? ( (double)$profit / (double)$weight ) : 0.0 ;
+    return this ;
+  }
+  String   strPwr() { return String.format( "%7.3f", $pwr ); }
   
   double  getBound() { return $bound ; }
   void    setBound( double b ) { $bound = b ; }
@@ -134,7 +133,6 @@ public class KnapNode // implements Comparable
   
   /**
    * Calculate the bound for this {@link KnapNode} in the given {@link KnapItemList}
-   * 
    * @param items - other KnapNodes to select from
    * @param maxWeight - restriction specified by user
    * @param label - info
@@ -196,7 +194,6 @@ public class KnapNode // implements Comparable
   
   /**
    * Log info for a node
-   * 
    * @param k - logger to print to
    * @param lev - level to print at
    * @param s - extra info
@@ -210,7 +207,6 @@ public class KnapNode // implements Comparable
   
   /**
    * String description of a node
-   * 
    * @return String with info
    */
   public String display()
