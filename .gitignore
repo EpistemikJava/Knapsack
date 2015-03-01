@@ -3,4 +3,6 @@
 /out
 /.project
 /.classpath
-/docs/
+/.settings
+/docs
+
