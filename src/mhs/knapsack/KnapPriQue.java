@@ -34,15 +34,15 @@ public class KnapPriQue extends Vector<KnapNode> {
      */
     @Override
     public boolean add(KnapNode k) {
-        if(isEmpty()) return super.add(k);
+        if( isEmpty() ) return super.add(k);
 
         int index = 0;
 
         /* INSTEAD OF calling Collections.sort() - find the proper position to insert this Node to maintain a sorted Vector */
-        while(index < size() && k.getBound() < elementAt(index).getBound())
+        while( index < size() && k.getBound() < elementAt(index).getBound() )
             index++;
 
-        if(index >= size())
+        if( index >= size() )
             addElement(k);
         else
             add(index, k);
@@ -51,8 +51,7 @@ public class KnapPriQue extends Vector<KnapNode> {
         // Collections.sort( this, BOUND_ORDER );
 
         return contains(k);
-
-    }// add()
+    }
 
     /**
      * Log each {@link KnapNode} in the list
@@ -66,15 +65,14 @@ public class KnapPriQue extends Vector<KnapNode> {
         int j = 1;
         Iterator<KnapNode> it = iterator();
 
-        while(it.hasNext()) {
+        while( it.hasNext() ) {
             k.append(" #" + j + " ");
             k.append(it.next().display());
             j++;
         }
 
         k.send(lev);
-
-    }// log()
+    }
 
     /**
      * Log the head {@link KnapNode} in the list
@@ -85,7 +83,6 @@ public class KnapPriQue extends Vector<KnapNode> {
         k.appendln("\nHead of PriorityQueue:\n");
         k.appendln(get(0).display());
         k.send(lev);
+    }
 
-    }// logHead()
-
-}/* class KnapPriQue */
+}// class KnapPriQue

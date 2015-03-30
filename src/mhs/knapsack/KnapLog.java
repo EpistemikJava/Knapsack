@@ -39,7 +39,7 @@ class KnapLogManager {
     KnapLogManager(String strLevel) {
         // create a Knapsack Logger to log to a file
         myLogger = KnapLogger.getNewLogger("Knapsack Logger");
-        if(myLogger == null) {
+        if( myLogger == null ) {
             System.err.println("KnapLogManager CONSTRUCTOR: Could NOT get a Knapsack Logger??!!");
             System.exit(this.hashCode());
         }
@@ -49,26 +49,26 @@ class KnapLogManager {
             textHandler = new FileHandler(LOG_SUBFOLDER + KnapSack.PROJECT_NAME + LOG_ROLLOVER_SPEC + TEXT_LOGFILE_TYPE,
                             LOGFILE_MAX_BYTES, MAX_NUM_LOG_FILES);
             // set the Handler to use the Knapsack Formatter
-            if(textHandler != null) {
+            if( textHandler != null ) {
                 textHandler.setFormatter(new KnapFormatter());
 
                 // send logger output to our Handler
                 myLogger.addHandler(textHandler);
             } else
                 System.err.println("KnapLogManager CONSTRUCTOR: textHandler is NULL!");
-        } catch(IOException ioe) {
+        } catch( IOException ioe ) {
             System.err.println("KnapLogManager CONSTRUCTOR: Could NOT create a FileHandler: " + ioe);
-        } catch(SecurityException se) {
+        } catch( SecurityException se ) {
             System.err.println("KnapLogManager CONSTRUCTOR: Security Exception: " + se);
         }
 
         // get the anonymous logger -- it prints to console
         anonLogger = LogManager.getLogManager().getLogger("");
-        if(anonLogger != null) {
+        if( anonLogger != null ) {
             try {
-                for(Handler h : anonLogger.getHandlers())
+                for( Handler h : anonLogger.getHandlers() )
                     h.setFormatter(new KnapFormatter());
-            } catch(Exception e) {
+            } catch( Exception e ) {
                 System.err.println("KnapLogManager CONSTRUCTOR: anonLogger setFormatter() Exception: " + e);
             }
         } else
@@ -76,8 +76,7 @@ class KnapLogManager {
 
         // Limit log messages to <strLevel> and above
         setLevel(strLevel);
-
-    }// CONSTRUCTOR
+    }
 
     /** @return private static {@link KnapLogger} <var>myLogger</var> */
     protected KnapLogger getKnapLogger() {
@@ -100,11 +99,11 @@ class KnapLogManager {
      */
     void setLevel(String lev) {
         Level validLevel = DEFAULT_LEVEL;
-        if(lev != null && !lev.isEmpty()) {
+        if( lev != null && !lev.isEmpty() ) {
             String s = lev.toUpperCase();
             try {
                 validLevel = Level.parse(s);
-            } catch(IllegalArgumentException iae) {
+            } catch( IllegalArgumentException iae ) {
                 System.err.println("KnapLogManager.setLevel(String): " + iae.toString() + " -- using DEFAULT Level: "
                                 + DEFAULT_LEVEL.getName());
             }
@@ -123,15 +122,15 @@ class KnapLogManager {
         currentLevel = level;
         intLevel = currentLevel.intValue();
 
-        if(myLogger != null) {
+        if( myLogger != null ) {
             myLogger.setLevel(currentLevel);
-            for(Handler h : myLogger.getHandlers())
+            for( Handler h : myLogger.getHandlers() )
                 h.setLevel(level);
         }
 
-        if(anonLogger != null) {
+        if( anonLogger != null ) {
             anonLogger.setLevel(currentLevel);
-            for(Handler h : anonLogger.getHandlers())
+            for( Handler h : anonLogger.getHandlers() )
                 h.setLevel(level);
         }
     }
@@ -186,9 +185,9 @@ class KnapLogManager {
      * @return {@link Level} <var>currentLevel</var>
      */
     protected Level moreLogging() {
-        if(intLevel == Level.FINEST.intValue())
+        if( intLevel == Level.FINEST.intValue() )
             intLevel = Level.SEVERE.intValue(); // wrap around to HIGHEST (least amount of logging) setting
-        else if(intLevel == Level.CONFIG.intValue())
+        else if( intLevel == Level.CONFIG.intValue() )
             intLevel = Level.FINE.intValue(); // jump gap b/n CONFIG & FINE
         else
             intLevel -= 100; // go down to a finer (more logging) setting
@@ -199,8 +198,7 @@ class KnapLogManager {
         myLogger.severe("Log level is NOW at " + currentLevel);
 
         return currentLevel;
-
-    }// LogControl.incLevel()
+    }
 
     String myname() {
         return getClass().getSimpleName();
@@ -215,10 +213,10 @@ class KnapLogManager {
         myLogger.appendln("Current Loggers:");
 
         Enumeration<String> e = lm.getLoggerNames();
-        while(e.hasMoreElements()) {
+        while( e.hasMoreElements() ) {
             String name = e.nextElement();
             myLogger.appendln(name);
-            for(Handler h : lm.getLogger(name).getHandlers())
+            for( Handler h : lm.getLogger(name).getHandlers() )
                 myLogger.append("\t> " + h.getLevel());
             myLogger.appendln(" |");
         }
@@ -231,11 +229,11 @@ class KnapLogManager {
         myLogger.appendln("Active Loggers:");
 
         Enumeration<String> e = lm.getLoggerNames();
-        while(e.hasMoreElements()) {
+        while( e.hasMoreElements() ) {
             String name = e.nextElement();
-            if(lm.getLogger(name).getHandlers().length > 0) {
+            if( lm.getLogger(name).getHandlers().length > 0 ) {
                 myLogger.appendln(" * " + (name.equals("") ? "'anonymous logger'" : name));
-                for(Handler h : lm.getLogger(name).getHandlers())
+                for( Handler h : lm.getLogger(name).getHandlers() )
                     myLogger.append("     > " + h.getLevel());
                 myLogger.appendln(" |");
             }
@@ -287,8 +285,7 @@ class KnapLogManager {
 class KnapLogger extends Logger {
     /*
      * C O N S T R U C T O R S
-     * **********************************************************************************
-     */
+     * ***********************************************************************************/
 
     /**
      * USUAL constructor - just calls the super equivalent
@@ -302,8 +299,7 @@ class KnapLogger extends Logger {
 
     /*
      * M E T H O D S
-     * **********************************************************************************
-     */
+     * ***********************************************************************************/
 
     // =============================================================================
     // I N T E R F A C E
@@ -320,23 +316,21 @@ class KnapLogger extends Logger {
         KnapLogger mylogger = new KnapLogger(name, null);
         LogManager.getLogManager().addLogger(mylogger);
         return mylogger;
-
-    }// KnapLogger.getNewLogger()
+    }
 
     /**
      * Prepare and send a {@link LogRecord} with data from the log buffer
      * @param level - {@link Level} to log at
      */
     protected void send(Level level) {
-        if(buffer.length() == 0) return;
+        if( buffer.length() == 0 ) return;
 
         getCallerClassAndMethodName();
         LogRecord lr = getRecord(level, buffer.toString());
         clean();
 
         sendRecord(lr);
-
-    }// KnapLogger.send()
+    }
 
     /**
      * Add data to the log buffer
@@ -398,8 +392,7 @@ class KnapLogger extends Logger {
         lr.setSourceClassName(callclass);
         lr.setSourceMethodName(callmethod);
         return lr;
-
-    }// KnapLogger.getRecord()
+    }
 
     /**
      * Actually send the {@link LogRecord} to the logging handler
@@ -410,8 +403,7 @@ class KnapLogger extends Logger {
         callclass = null;
         callmethod = null;
         super.log(lr);
-
-    }// KnapLogger.sendRecord()
+    }
 
     /**
      * Get the name of the {@link Class} and <em>Method</em> that called {@link KnapLogger}
@@ -423,18 +415,17 @@ class KnapLogger extends Logger {
         Throwable t = new Throwable();
         StackTraceElement[] elements = t.getStackTrace();
 
-        if(elements.length < 3)
+        if( elements.length < 3 )
             callclass = callmethod = strUNKNOWN;
         else {
             callclass = elements[2].getClassName();
             callmethod = elements[2].getMethodName();
         }
-
-    }// KnapLogger.getCallerClassAndMethodName()
+    }
 
     /*
-     * F I E L D S **********************************************************************
-     */
+     * F I E L D S 
+     * ***********************************************************************/
 
     /** Class calling the Logger */
     private String callclass = null;
@@ -503,4 +494,4 @@ class KnapFormatter extends Formatter {
                  rec = ": Knapsack Record #",
                 tail = "Knapsack END" + nl;
 
-}/* class KnapFormatter */
+}// class KnapFormatter

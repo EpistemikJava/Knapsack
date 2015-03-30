@@ -54,8 +54,8 @@ import java.util.logging.Level;
  */
 public class KnapSack {
     /*
-     * FIELDS ===========================================================================
-     */
+     * FIELDS
+     * =========================================================================== */
 
     static final int MAXINPUT = 1024;
 
@@ -84,9 +84,9 @@ public class KnapSack {
             KnapNode k2 = (KnapNode) o2;
 
             // descending order
-            if(k1.getPwr() < k2.getPwr()) return 1;
+            if( k1.getPwr() < k2.getPwr() ) return 1;
 
-            if(k1.getPwr() > k2.getPwr()) return -1;
+            if( k1.getPwr() > k2.getPwr() ) return -1;
 
             return 0;
         }
@@ -104,8 +104,8 @@ public class KnapSack {
     KnapItemList itemList; // the initial items ranked by profit/weight ratio
 
     /*
-     * Constructors =====================================================================
-     */
+     * Constructors
+     * ===================================================================== */
 
     /**
      * Default Constructor
@@ -114,7 +114,7 @@ public class KnapSack {
     public KnapSack(String args[]) {
         // INIT LOGGING
         logManager = new KnapLogManager(args.length >= 2 ? args[1] : STR_DEFAULT_LOG_LEVEL);
-        if(logManager == null) {
+        if( logManager == null ) {
             System.err.print("\t>> KnapSack CONSTRUCTOR: COULD NOT create a KnapLogManager!");
             System.exit(this.hashCode());
         }
@@ -122,7 +122,7 @@ public class KnapSack {
         currentLevel = logManager.getLevel();
 
         logger = logManager.getKnapLogger();
-        if(logger == null) {
+        if( logger == null ) {
             System.err.print("\t>> KnapSack CONSTRUCTOR: COULD NOT create a KnapLogger!");
             System.exit(this.hashCode());
         }
@@ -140,8 +140,8 @@ public class KnapSack {
     }
 
     /*
-     * METHODS ==========================================================================
-     */
+     * METHODS 
+     * ========================================================================== */
 
     /**
      * MAIN
@@ -149,8 +149,7 @@ public class KnapSack {
      */
     public static void main(final String args[]) {
         new KnapSack(args).go();
-
-    }/* main() */
+    }
 
     /**
      * Check the command line parameters
@@ -158,7 +157,7 @@ public class KnapSack {
      */
     private void setup(String cmdArgs[]) {
         // need the name of the file containing the items
-        if(cmdArgs.length < 1) {
+        if( cmdArgs.length < 1 ) {
             System.err.println("\n Usage: java " + this.getClass().getSimpleName() + " <items file> [log_level] [max weight]\n"
                             + "        (log_level = e.g. INFO, CONFIG, FINE)");
 
@@ -166,27 +165,25 @@ public class KnapSack {
         }
 
         fileName = cmdArgs[0];
-        if(fileName == null) {
+        if( fileName == null ) {
             System.err.println("\t BAD file name = " + fileName + "\n");
             System.exit(this.hashCode());
         }
 
         // maximum weight
-        if(cmdArgs.length < 3) {
+        if( cmdArgs.length < 3 ) {
             System.out.print("\nEnter the maximum weight: ");
             maxWeight = getInputInteger();
         } else
             maxWeight = Integer.parseInt(cmdArgs[2]);
 
         // maxWeight must be positive
-        if(maxWeight < 1) {
+        if( maxWeight < 1 ) {
             System.out.println("Max Weight must be a positive integer!\n");
             System.exit(maxWeight - 1);
         }
-
         System.out.println("setup() OK \n");
-
-    }// setup()
+    }
 
     /**
      * Run the KnapSack program
@@ -195,7 +192,7 @@ public class KnapSack {
         itemList = new KnapItemList(logger);
         bestItems = new KnapNode("");
 
-        if(!getFileData()) System.exit(numItems);
+        if( !getFileData() ) System.exit(numItems);
 
         itemList.log("initial"); // the original vector
 
@@ -215,8 +212,7 @@ public class KnapSack {
                         + "\n Best items are: " + bestItems.getName());
 
         logger.severe("*** PROGRAM ENDED ***");
-
-    }// go()
+    }
 
     /**
      * Open the user-specified file and parse the data
@@ -232,20 +228,20 @@ public class KnapSack {
             r = new BufferedReader(new FileReader(fileName));
             StreamTokenizer st = new StreamTokenizer(r);
 
-            while(st.nextToken() != StreamTokenizer.TT_EOF) {
-                if(st.ttype == StreamTokenizer.TT_WORD)
+            while( st.nextToken() != StreamTokenizer.TT_EOF ) {
+                if( st.ttype == StreamTokenizer.TT_WORD )
                     item = st.sval;
                 else
                     throw new Exception("Problem finding name of item #" + (numItems + 1));
 
                 st.nextToken();
-                if(st.ttype == StreamTokenizer.TT_NUMBER)
+                if( st.ttype == StreamTokenizer.TT_NUMBER )
                     p = (int) st.nval;
                 else
                     throw new Exception("Problem finding profit of item #" + (numItems + 1));
 
                 st.nextToken();
-                if(st.ttype == StreamTokenizer.TT_NUMBER)
+                if( st.ttype == StreamTokenizer.TT_NUMBER )
                     w = (int) st.nval;
                 else
                     throw new Exception("Problem finding weight of item #" + (numItems + 1));
@@ -265,23 +261,21 @@ public class KnapSack {
 
             logger.severe("There were " + numItems + " items in file '" + fileName + "'");
 
-        } catch(FileNotFoundException f) {
+        } catch( FileNotFoundException f ) {
             logger.severe("\t>> Find file problem: " + f.toString());
             return false;
-        } catch(Exception e) {
+        } catch( Exception e ) {
             logger.severe("\t>> Get file data problem: " + e.toString());
             return false;
         } finally {
             try {
-                if(r != null) r.close();
-            } catch(Exception e) {
+                if( r != null ) r.close();
+            } catch( Exception e ) {
                 logger.severe("\t?? Could NOT close the file: " + e.toString());
             }
         }
-
         return true;
-
-    }// getFileData()
+    }
 
     /**
      * get a String from user
@@ -292,13 +286,12 @@ public class KnapSack {
 
         try {
             System.in.read(response);
-        } catch(Exception e) {
+        } catch( Exception e ) {
             logger.severe(e.toString());
         }
 
         return new String(response).trim();
-
-    }// getInputString()
+    }
 
     /**
      * get an int from user
@@ -308,15 +301,13 @@ public class KnapSack {
         int response = 0;
         try {
             response = Integer.parseInt(getInputString());
-        } catch(NumberFormatException nfe) {
+        } catch( NumberFormatException nfe ) {
             logger.severe("Problem converting String to int:" + nfe.toString());
         }
-
         return response;
+    }
 
-    }// getInputInteger()
-
-}/* class KnapSack */
+}// class KnapSack
 
 /* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ *
 
@@ -337,8 +328,8 @@ class KnapItemList extends Vector<KnapNode> {
     }
 
     /*
-     * METHODS **************************************************************************
-     */
+     * METHODS 
+     * ***************************************************************************/
 
     /**
      * Verify the requested index and if good then return the item at that position, otherwise {@link System#exit(int)}
@@ -346,14 +337,13 @@ class KnapItemList extends Vector<KnapNode> {
      * @return {@link KnapNode}
      */
     KnapNode getItem(int index) {
-        if(index < 0 || index >= size()) {
+        if( index < 0 || index >= size() ) {
             logger.severe("Requested index (" + index + ") NOT VALID! My size = " + size() + ".\n");
             System.exit(this.hashCode());
         }
 
         return get(index);
-
-    }// getItem()
+    }
 
     /**
      * Find the optimal set of items for the given maximum weight
@@ -381,7 +371,7 @@ class KnapItemList extends Vector<KnapNode> {
 
         String name;
         /* loop through the state space tree */
-        while(!sst.isEmpty() && count < LOOP_LIMIT) // LOOP_LIMIT prevents a runaway loop
+        while( !sst.isEmpty() && count < LOOP_LIMIT ) // LOOP_LIMIT prevents a runaway loop
         {
             logger.info(" count = " + count);
 
@@ -390,7 +380,7 @@ class KnapItemList extends Vector<KnapNode> {
             topNode = sst.remove(TOP); // remove node with best bound
             topNode.log(logger, Level.FINE, " BFS(topNode):");
 
-            if(topNode.getBound() > totalProfit) // check if this node is promising
+            if( topNode.getBound() > totalProfit ) // check if this node is promising
             {
                 logger.finer(" topNode.bound = " + topNode.getBound());
 
@@ -405,7 +395,7 @@ class KnapItemList extends Vector<KnapNode> {
                 topNode.log(logger, Level.INFO, " BFS(top-):");
 
                 topNode.calculateBound(this, maxWeight, "topNode-Exclude", logger);
-                if(topNode.getBound() > totalProfit) // if this node is promising
+                if( topNode.getBound() > totalProfit ) // if this node is promising
                     sst.add(new KnapNode(topNode)); // re-insert into sst
 
                 /* check the Node that INCLUDES the next item from the list */
@@ -419,7 +409,7 @@ class KnapItemList extends Vector<KnapNode> {
                 topNode.log(logger, Level.INFO, " BFS(top+nextItem): ");
 
                 // check the updated total profit
-                if((topNode.getWeight() <= maxWeight) && (topNode.getProfit() > totalProfit)) {
+                if( (topNode.getWeight() <= maxWeight) && (topNode.getProfit() > totalProfit) ) {
                     totalProfit = topNode.getProfit();
                     sumOfWeights = topNode.getWeight();
                     bestItems.setName(topNode.getName()); // keep track of overall list of best items
@@ -431,7 +421,7 @@ class KnapItemList extends Vector<KnapNode> {
                 }
 
                 topNode.calculateBound(this, maxWeight, " top+nextItem", logger);
-                if(topNode.getBound() > totalProfit) // see if this node is promising
+                if( topNode.getBound() > totalProfit ) // see if this node is promising
                     sst.add(topNode);
 
             } // if( topNode.getBound() > totalProfit )
@@ -444,15 +434,14 @@ class KnapItemList extends Vector<KnapNode> {
 
         }// while( !sst.isEmpty() && count < LOOP_LIMIT )
 
-        if(count >= LOOP_LIMIT)
+        if( count >= LOOP_LIMIT )
             logger.severe("WARNING: REACHED LIMIT OF SEARCH LOOP = " + count + "!");
         else
             logger.info(" Num times through loop = " + count);
 
         bestItems.setWeight(sumOfWeights);
         bestItems.setProfit(totalProfit);
-
-    }// bestFirstSearch()
+    }
 
     /**
      * Log each {@link KnapNode} in the list
@@ -462,17 +451,15 @@ class KnapItemList extends Vector<KnapNode> {
     public void log(Level lev, String s) {
         logger.appendln(" KnapItemList '" + s + "': ");
 
-        for(int j = 0; j < size(); j++) {
+        for( int j = 0; j < size(); j++ ) {
             logger.append(" #");
-            if(j < 9) logger.append(" ");
+            if( j < 9 ) logger.append(" ");
             logger.append((j + 1) + " ");
             logger.append(get(j).display());
         }
         logger.appendnl();
-
         logger.send(lev);
-
-    }// log()
+    }
 
     /**
      * Log each {@link KnapNode} in the list
@@ -483,8 +470,8 @@ class KnapItemList extends Vector<KnapNode> {
     }
 
     /*
-     * FIELDS ***************************************************************************
-     */
+     * FIELDS 
+     * ****************************************************************************/
 
     static final int INIT = -1, // after increment, the initial index into the item list will be 0
                     TOP = 0; // get the top (highest priority) item from the state space tree
@@ -509,4 +496,4 @@ class KnapItemList extends Vector<KnapNode> {
     // working nodes
     private KnapNode topNode, nextItemNode;
 
-}/* class KnapItemList */
+}// class KnapItemList
